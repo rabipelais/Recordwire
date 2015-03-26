@@ -1,8 +1,12 @@
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE QuasiQuotes       #-}
 
 module Main where
 
+import           Cube
 import           Keyboard
+import           Record
+import           Render
 import           Window
 
 import           BasePrelude
@@ -10,10 +14,11 @@ import           Control.Lens
 import           Control.Wire              hiding (unless)
 import           Graphics.GLUtil
 import           Graphics.GLUtil.Camera3D
-import           Graphics.Rendering.OpenGL
+import           Graphics.Rendering.OpenGL hiding (renderer)
 import           Graphics.UI.GLFW
 import           Linear
 
+setup :: IO (AppInfo -> [GameObject] -> IO ())
 setup = do
   clearColor $= Color4 0.3 0.6 0.3 1
   depthFunc $= Just Lequal
@@ -21,9 +26,14 @@ setup = do
   blendFunc $= (SrcAlpha, OneMinusSrcAlpha)
   return renderer
   where
-    renderer = undefined
+    renderer i os = vp i (render i os)
+    vPos@(V2 px py) = V2 160 120
+    vp = withViewport (Position px py)
+       . (\(V2 w h) -> Size w h) . subtract vPos
+       . view [l|viewport|]
 
-gameObjects = []
+gameObjects :: [Wire (Timed NominalDiffTime ()) () IO a GameObject]
+gameObjects = [mkCube]
 
 gameLoop :: IO UI -> IO ()
 gameLoop inputSource = setup >>= go cam0 clockSession_ gameObjects
@@ -38,12 +48,17 @@ gameLoop inputSource = setup >>= go cam0 clockSession_ gameObjects
       case objs of
         Left _ -> return ()
         Right objs' -> do
-          let V2 ww wh = fromIntegral <$> (- V2 160 120)
+          let V2 ww wh = fromIntegral <$> (windowSize ui - V2 160 120)
               mProj :: M44 GLfloat
               mProj = projectionMatrix (deg2rad 30) (ww / wh) 0.01 100
               mCam :: M44 GLfloat
               mCam = camMatrix c
-          --     info = undefined
+              proj = mProj !*! mCam
+              vp = fromIntegral <$> windowSize ui
+              info = [r| { cam = mCam
+                         , proj = proj
+                         , viewport = vp} |]
+          draw info objs'
           unless (keysPressed ui ^. contains Key'Escape)
                  (go (moveCamera ui c) session' ws draw)
     cam0 = tilt (-20) $ dolly (V3 0 2 8) fpsCamera
