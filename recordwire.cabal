@@ -18,7 +18,7 @@ cabal-version:       >=1.10
 executable recordwire
   main-is:             Main.hs
   -- other-modules:
-  -- other-extensions:
+  default-extensions:  DataKinds, QuasiQuotes, FlexibleContexts
   build-depends:       GLFW-b >= 1.4
                      , GLUtil >= 0.7
                      , OpenGL >= 2.9.2
