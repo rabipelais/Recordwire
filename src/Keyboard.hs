@@ -48,5 +48,5 @@ moveCamera ui = cnfEndo S.member S.delete
         timeScale = 0.1 * 60
         pp = 0.08 * timeScale -- 1D speed
         np = negate pp
-        pa = 2 * timeScale    -- angular step
+        pa = 0.2 * timeScale    -- angular step
         na = negate pa

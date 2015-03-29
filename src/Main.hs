@@ -5,6 +5,7 @@ module Main where
 
 import           Cube
 import           Keyboard
+import           Plane
 import           Record
 import           Render
 import           Window
@@ -33,7 +34,7 @@ setup = do
        . view [l|viewport|]
 
 gameObjects :: [Wire (Timed NominalDiffTime ()) () IO a GameObject]
-gameObjects = [mkCube]
+gameObjects = [mkCube, mkPlane]
 
 gameLoop :: IO UI -> IO ()
 gameLoop inputSource = setup >>= go cam0 clockSession_ gameObjects
