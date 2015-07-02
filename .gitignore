@@ -2,3 +2,5 @@
 /cabal.config
 /cabal.sandbox.config
 /dist/
+/TAGS
+/.stack-work/
