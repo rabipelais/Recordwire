@@ -1,6 +1,7 @@
 flags: {}
 packages:
 - '.'
+- /home/sebas/Projects/GLUtil
 extra-deps:
 - GLFW-b-1.4.7.2
 - GLUtil-0.8.6
