@@ -41,14 +41,14 @@ type AppInfo = [r| { cam :: M44 GLfloat
 type GameObject = ObservableState
 
 
-render :: ( Field' "vertices" o ColouredVertices, Field' "indices" o [Word32]
-          , CamInfo i (M44 GLfloat))
-       => i -> [o] -> IO ()
+-- render :: ( Field' "vertices" o ColouredVertices, Field' "indices" o [Word32]
+--           , CamInfo i (M44 GLfloat))
+--        => i -> [o] -> IO ()
 render cam = mapM_ (render' cam)
 
-render' :: ( Field' "vertices" o ColouredVertices, Field' "indices" o [Word32]
-           , CamInfo i (M44 GLfloat))
-         => i -> o -> IO ()
+-- render' :: ( Field' "vertices" o ColouredVertices, Field' "indices" o [Word32]
+--            , CamInfo i (M44 GLfloat))
+--          => i -> o -> IO ()
 render' cam ob = do
   s <- simpleShaderProgram ("res" </> "poly.vert") ("res" </> "poly.frag")
   vb <- bufferVertices (ob ^. [l|vertices|])

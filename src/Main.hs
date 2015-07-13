@@ -17,7 +17,7 @@ import           Graphics.GLUtil
 import           Graphics.GLUtil.Camera3D
 import           Graphics.Rendering.OpenGL hiding (renderer)
 import           Graphics.UI.GLFW
-import           Linear
+import           Linear                    hiding (trace)
 
 setup :: IO (AppInfo -> [GameObject] -> IO ())
 setup = do
@@ -34,7 +34,7 @@ setup = do
        . view [l|viewport|]
 
 gameObjects :: [Wire (Timed NominalDiffTime ()) () IO a GameObject]
-gameObjects = [mkCube, mkPlane]
+gameObjects = [mkCube, mkCube, mkPlane]
 
 gameLoop :: IO UI -> IO ()
 gameLoop inputSource = setup >>= go cam0 clockSession_ gameObjects
@@ -61,11 +61,10 @@ gameLoop inputSource = setup >>= go cam0 clockSession_ gameObjects
                          , viewport = vp} |]
           draw info objs'
           unless (keysPressed ui ^. contains Key'Escape)
-                 (go (moveCamera ui c) session' ws draw)
-    cam0 = tilt (-20) $ dolly (V3 0 2 8) fpsCamera
-
+                 (go (moveCamera ui 0 c) session' ws draw)
+    cam0 = fpsCamera
 main :: IO ()
 main = usage >> initGL "Records test" 640 480 >>= gameLoop
 
 usage :: IO ()
-usage = putStrLn "Arrow keys to translate, shift+arrow to rotate, esc to exit!"
+usage = putStrLn "Arrow keys to translate, shift+arrow to rotate, esc to exit! Move the mouse!"

@@ -14,6 +14,8 @@ import           Linear
 import           Prelude             hiding (init)
 import           System.Directory    (getCurrentDirectory, setCurrentDirectory)
 
+import qualified Debug.Trace         as D
+
 -- | Interface updates provided to the party responsible for
 -- generating each frame.
 data UI = UI { timeStep       :: Double
@@ -22,6 +24,8 @@ data UI = UI { timeStep       :: Double
              -- ^ All keys currently pressed
              , buttonsPressed :: Set MouseButton
              -- ^ All mouse buttons currently pressed
+             , lastMousePos   :: V2 Double
+             -- ^ Previous mouse position
              , mousePos       :: V2 Double
              -- ^ Current mouse position
              , windowSize     :: V2 Int
@@ -63,9 +67,11 @@ initGL windowTitle width height = do
 
   kbState <- newIORef S.empty
   mbState <- newIORef S.empty
+  lmState <- getCursorPos w >>= newIORef . uncurry V2
   mpState <- getCursorPos w >>= newIORef . uncurry V2
   wsState <- getWindowSize w >>= newIORef . uncurry V2
   lastTick <- getCurrentTime >>= newIORef
+  setCursorInputMode w CursorInputMode'Disabled
   setKeyCallback w (Just $ keyCallback kbState)
   setMouseButtonCallback w (Just $ mbCallback mbState)
   setCursorPosCallback w (Just $ mpCallback mpState)
@@ -75,9 +81,13 @@ initGL windowTitle width height = do
               pollEvents
               t <- getCurrentTime
               dt <- realToFrac . diffUTCTime t <$> readIORef lastTick
+              currMouse <- readIORef mpState
+              lastMouse <- readIORef lmState
               writeIORef lastTick t
+              writeIORef lmState currMouse
               UI dt <$> readIORef kbState
                   <*> readIORef mbState
-                  <*> readIORef mpState
+                  <*> pure lastMouse
+                  <*> pure currMouse
                   <*> readIORef wsState
   where simpleErrorCallback e s = putStrLn $ unwords [show e, show s]
