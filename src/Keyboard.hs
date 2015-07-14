@@ -84,7 +84,7 @@ quat2Euler (Quaternion q0 (V3 q1 q2 q3)) = (x, y, z)
 
 -- | Translate and rotate a 'Camera' based on 'UI' input.
 moveCamera :: (Conjugate a, Epsilon a, RealFloat a) => UI -> V3 a -> Camera a -> Camera a
-moveCamera ui focus = aroundTarget 6 diffMouse focus .
+moveCamera ui focus = aroundTarget 30 diffMouse focus .
                       cnfEndo S.member S.delete
                       [ ([shift, ctrl, [Key'Left]], roll na)
                        , ([shift, ctrl, [Key'Right]], roll pa)

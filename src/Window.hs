@@ -67,8 +67,8 @@ initGL windowTitle width height = do
 
   kbState <- newIORef S.empty
   mbState <- newIORef S.empty
-  lmState <- getCursorPos w >>= newIORef . uncurry V2
-  mpState <- getCursorPos w >>= newIORef . uncurry V2
+  lmState <- newIORef (V2 0 0)
+  mpState <- newIORef (V2 0 0)
   wsState <- getWindowSize w >>= newIORef . uncurry V2
   lastTick <- getCurrentTime >>= newIORef
   setCursorInputMode w CursorInputMode'Disabled
